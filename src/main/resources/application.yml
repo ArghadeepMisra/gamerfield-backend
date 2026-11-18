@@ -1,0 +1,84 @@
+spring:
+  application:
+    name: arena
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/arena}
+    username: ${DB_USER:arena}
+    password: ${DB_PASSWORD:arena}
+    hikari:
+      maximum-pool-size: 20
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  mvc:
+    problemdetails:
+      enabled: true
+
+server:
+  port: 8080
+  error:
+    include-stacktrace: never
+
+logging:
+  structured:
+    format:
+      console: ecs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+        arena.leaderboard.rank.lookup: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+arena:
+  jwt:
+    secret: ${JWT_SECRET}
+    issuer: fairplay-arena
+    access-token-ttl: 15m
+    refresh-token-ttl: 7d
+  rating:
+    initial: 1000
+    max-delta: 30
+  leaderboard:
+    key: leaderboard:global
+    rebuild-on-startup: true
+    rebuild-batch-size: 10000
+  stats:
+    min-matches-for-percentiles: 5
+    refresh-interval: 60s
+  moderation:
+    service-ban-min-confidence: 0.80
+  accounts:
+    moderator:
+      username: mod-admin
+      password: ${MODERATOR_PASSWORD}
+    services:
+      - username: telemetry-sim
+        password: ${TELEMETRY_SERVICE_PASSWORD}
+      - username: judge-agent
+        password: ${JUDGE_SERVICE_PASSWORD}

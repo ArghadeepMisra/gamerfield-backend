@@ -1,0 +1,6 @@
+# Keep secrets and build output out of the Docker build context.
+.env
+.git
+.idea
+target
+benchmark/player-ids.json
